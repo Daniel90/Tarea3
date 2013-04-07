@@ -8,7 +8,7 @@ PGresult *result = NULL;
 
 char *host = "localhost";
 char *port = "5432";
-char *dataBase = "postgres";
+char *dataBase = "transaction";
 char *user = "postgres";
 char *passwd = "root";
 
@@ -16,11 +16,11 @@ int main(int argc, char *argv[])
 {
      int i;
 
-    cnn = PQsetdbLogin(host,port,NULL,NULL,dataBase,user,passwd);
+     cnn = PQsetdbLogin(host,port,NULL,NULL,dataBase,user,passwd);
 
     if (PQstatus(cnn) != CONNECTION_BAD) {
         cout << "Estamos conectados a PostgreSQL!" << endl;
-        result = PQexec(cnn, "SELECT * FROM uno");
+        result = PQexec(cnn, "SELECT AVG(nota) from asignaturas_cursadas");
 
         if (result != NULL) {
             int tuplas = PQntuples(result);
@@ -34,14 +34,18 @@ int main(int argc, char *argv[])
                 cout << PQfname(result,i) << " | ";
             }
 
-            cout << endl << "Contenido de la tabla" << endl;
+            cout << endl << "El promedio de notas fue" << endl;
 
             for (i=0; i<tuplas; i++) {
-                for (int j=0; j<campos; j++) {
+                for (int j=0; j<campos; j++) 
+                {
+                    
                     cout << PQgetvalue(result,i,j) << " | ";
+                    
                 }
                 cout << endl;
             }
+            
         }
 
         // Ahora nos toca liberar la memoria
