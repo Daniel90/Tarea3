@@ -4,11 +4,11 @@
 using namespace std;
 
 PGconn *cnn = NULL;
-PGresult *result = NULL, *result2 = NULL;
+PGresult *result1 = NULL, *result2 = NULL;
 
 char *host = "localhost";
 char *port = "5432";
-char *dataBase = "transaction";
+char *dataBase = "tarea";
 char *user = "postgres";
 char *passwd = "root";
 
@@ -20,41 +20,55 @@ int main(int argc, char *argv[])
 
     if (PQstatus(cnn) != CONNECTION_BAD) {
         cout << "Coneccion exitosa!" << endl;
+        cout << "host: "<<host<<endl<<"Puerto: "<<port<<endl<<"Base de datos: "<<dataBase<<endl<<"Usuario: "<<user<<endl<<"password: ****"<<endl;
         //result = PQexec(cnn, "SELECT AVG(nota) from asignaturas_cursadas");
-        result = PQexec(cnn, "SELECT sqrt((sum(power((nota-(select avg(nota) from asignaturas_cursadas)),2)))/(select count(nota)-1 from asignaturas_cursadas)) from asignaturas_cursadas");
-        result2 = PQexec(cnn, "SELECT AVG(nota) from asignaturas_cursadas");
-        if (result != NULL) {
-            int tuplas = PQntuples(result);
-            int campos = PQnfields(result);
-            cout << "No. Filas:" << tuplas << endl;
-            cout << "No. Campos:" << campos << endl;
+        result1 = PQexec(cnn, "Select docente_id as Codigo_Docente, avg(nota) as Promedio from cursos,asignaturas_cursadas where cursos.curso_id = asignaturas_cursadas.curso_id group by docente_id");
+        result2 = PQexec(cnn,"Select docente_id as Codigo_Docente, sqrt((sum(power((nota-(select avg(nota) from asignaturas_cursadas)),2)))/(select count(nota)-1 from asignaturas_cursadas)) as Desv_Estandar from cursos,asignaturas_cursadas where cursos.curso_id = asignaturas_cursadas.curso_id group by docente_id");
+        if (result1 != NULL) 
+        {
+            int tuplas = PQntuples(result1);
+            int campos = PQnfields(result1);
+           // cout << "No. Filas:" << tuplas << endl;
+           // cout << "No. Campos:" << campos << endl;
 
-            cout << "Los nombres de los campos son:" << endl;
+            cout << endl <<"Promedio de notas por profesores:" << endl<<endl;
 
             for (i=0; i<campos; i++) {
-                cout << PQfname(result,i) << " | ";
+                cout <<PQfname(result1,i) << "                   ";
             }
-
-            cout << endl << "La desviacion estandar de notas fue" << endl;
-            
+            cout<<endl;  
             for (i=0; i<tuplas; i++) 
             {
                 for (int j=0; j<campos; j++) 
                 {
                     
-                    cout << PQgetvalue(result,i,j) << " | ";
+                    cout <<"      "<<PQgetvalue(result1,i,j)<<"            |";
                     
                 }
                 cout << endl;
             }
             
-            cout << endl << "El promedio de notas fue" << endl;
+        }
+        
+        if (result2 != NULL) 
+        {
+            int tuplas = PQntuples(result2);
+            int campos = PQnfields(result2);
+           // cout << "No. Filas:" << tuplas << endl;
+           // cout << "No. Campos:" << campos << endl;
+
+            cout << endl <<"La desviacion estandar por profesores fue:" << endl<<endl;
+
+            for (i=0; i<campos; i++) {
+                cout <<PQfname(result2,i) << "                  ";
+            }
+            cout<<endl;  
             for (i=0; i<tuplas; i++) 
             {
                 for (int j=0; j<campos; j++) 
                 {
                     
-                    cout << PQgetvalue(result2,i,j) << " | ";
+                    cout <<"      "<<PQgetvalue(result2,i,j) << "          |  ";
                     
                 }
                 cout << endl;
@@ -63,7 +77,7 @@ int main(int argc, char *argv[])
         }
 
         // Ahora nos toca liberar la memoria
-        PQclear(result);
+        PQclear(result1);
         PQclear(result2);
 
     } else {
