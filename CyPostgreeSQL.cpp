@@ -1,3 +1,5 @@
+// Daniel Abrilot 
+// Jhon Lopez
 #include <cstdlib>
 #include <iostream>
 #include <libpq-fe.h>
@@ -18,7 +20,7 @@ int main(int argc, char * argv[])
     cnn = PQsetdbLogin(host,port,NULL,NULL,dataBase,user,passwd);
     if (PQstatus(cnn) != CONNECTION_BAD) {
         cout << "Estamos conectados a PostgreSQL!" << endl;
-        result = PQexec(cnn, "select c.curso_id, avg(a.nota) as Promedio,c.docente_id from asignaturas_cursadas as a,cursos as c where c.curso_id = a.curso_id group by c.curso_id");
+        result = PQexec(cnn, "select c.curso_id, avg(a.nota) as Promedio,c.docente_id,sqrt((sum(power((nota-(select avg(a.nota) from asignaturas_cursadas as a)),2)))/(select count(a.nota)-1 from asignaturas_cursadas as a)) as Desv_Estandar from asignaturas_cursadas as a,cursos as c where c.curso_id = a.curso_id group by c.curso_id");
         if (result != NULL) {
             int tuplas = PQntuples(result);
             int campos = PQnfields(result);
