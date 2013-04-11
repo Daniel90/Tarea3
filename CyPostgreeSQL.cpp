@@ -19,7 +19,13 @@ int main(int argc, char *argv[])
      float DesvEst=0;
      float Suma=0;
      float value=0;
-     float A[100][100];
+     float A[1000][50];
+     
+     int cont=0;
+     float sum=0;
+     float prof=0;
+     float curs=0;
+     int chip=1;
 
      cnn = PQsetdbLogin(host,port,NULL,NULL,dataBase,user,passwd);
 
@@ -45,23 +51,57 @@ int main(int argc, char *argv[])
             for (i=0; i<tuplas; i++) {
                 for (int j=0; j<campos; j++) {
                     
-                    //value = atof(PQgetvalue(result,i,j));
-                    //Suma=Suma+value;
-                    //cout << Suma << " | ";
-                    cout << PQgetvalue(result,i,j) << " | "<<i<< " | "<<j<< " | ";
-                    system("PAUSE");
-                    system("CLS");
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
+                    value = atof(PQgetvalue(result,i,j));
+                    A[i][j]=value;
+                    //cout << PQgetvalue(result,i,j) << " | "<<i<< " | "<<j<< " | ";
+                    //system("PAUSE");
+                    //system("CLS");
+                                
                 }
                 cout << endl;
             }
+            for (i=0; i<tuplas; i++) {
+                for (int j=0; j<campos; j++) {
+                    
+                    cout << A[i][j] << " | ";
+                                                   
+                }
+                cout << endl;
+            }
+            
+            system("PAUSE");
+            
+            for (i=0; i<tuplas; i++) {
+                for (int j=0; j<campos; j++) {
+                    
+                    if(j=0)
+                    {      if(A[i][0]==A[i-1][0])
+                           {        cont++;
+                                    sum=sum+A[i][2];
+                                    prof=A[i][1];
+                                    curs=A[i][0];
+                           }
+                           else
+                           {        cout<<"Curso: "<<curs<<" Profesor: "<<prof<<" Promedio: "<<sum/cont<<endl;
+                                    system("PAUSE");
+                                    chip=1;
+                                    cont=0;
+                                    sum=0;
+                           }
+                           if(chip==1)
+                           {        cont++;
+                                    sum=sum+A[i][2];
+                                    prof=A[i][1];
+                                    curs=A[i][0];
+                                    chip=0;
+                           }
+                           
+                    }
+                                                   
+                }
+                cout << endl;
+            }
+            
             //cout << endl << "PROMEDIO :" <<Suma/tuplas<< endl;
             
         }
