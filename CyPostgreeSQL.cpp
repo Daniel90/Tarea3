@@ -26,14 +26,14 @@ int main(int argc, char * argv[])
             int tuplas = PQntuples(result);
             int campos = PQnfields(result);
             
-            cout << La informacion se muestra a continuacion:" << endl << endl;
+            cout << "La informacion se muestra a continuacion:" << endl << endl;
             
             
             
             for (i=0; i<campos; i++) {
                 cout << PQfname(result,i) << "          ";
             }
-            cout<<endl;
+            cout<<endl<<endl;
             for (i=0; i<tuplas; i++) {
                 for (int j=0; j<campos; j++) {
                     cout << PQgetvalue(result,i,j) << "         ";
